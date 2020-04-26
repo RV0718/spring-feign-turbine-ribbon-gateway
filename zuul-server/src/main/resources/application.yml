@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: zuul-server
+
+server:
+  port: 7070
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    hostname: localhost
+    port: 8761
+  client:
+    registry-fetch-interval-seconds: 5
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
+    healthcheck:
+      enabled: true
+
+#management:
+#  security:
+#    enabled: false  #disable the spring security on the management endpoints like /env, /refresh etc.
+#  endpoints:
+#    web:
+#      exposure:
+#        include: '*'
+#  endpoint:
+#    health:
+#      enabled: true
+
+
+zuul:
+  ignored-services: '*'
+  host:
+    max-total-connections: 1000
+    max-per-route-connections: 1000
+  routes:
+    eureka-school-service:
+      path: /school-service/**
+      service-id: eureka-school-service
+    eureka-student-service:
+      path: /student-service/**
+      service-id: eureka-student-service
+    hysterix-service:
+       path: /hs/**
+       service-id: hysterix-service
+
+
+turbine:
+  appConfig: eureka-school-service, hysterix-service
+  clusterNameExpression: new String("default")
